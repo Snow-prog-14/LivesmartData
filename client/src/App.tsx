@@ -19,6 +19,7 @@ function App() {
           <Route path="payments" element={<Payments />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="*" element={<div className="p-4"><h1>404 - Not Found</h1><p>The page you are looking for does not exist.</p><a href="/">Go to Dashboard</a></div>} />
         </Route>
       </Routes>
     </Router>

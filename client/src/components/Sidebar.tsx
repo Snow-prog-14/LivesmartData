@@ -1,13 +1,13 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 
 const Sidebar: React.FC = () => {
   return (
     <div className="d-flex flex-column flex-shrink-0 p-3 bg-light border-end" style={{ width: '280px', height: '100vh' }}>
-      <a href="/" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+      <Link to="/" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
         <i className="bi bi-smartwatch me-2" style={{ fontSize: '1.5rem' }}></i>
         <span className="fs-4">LivesmartData</span>
-      </a>
+      </Link>
       <hr />
       <ul className="nav nav-pills flex-column mb-auto">
         <li className="nav-item">

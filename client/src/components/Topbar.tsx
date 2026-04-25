@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Topbar: React.FC = () => {
   return (
@@ -18,12 +19,12 @@ const Topbar: React.FC = () => {
           </form>
           <ul className="navbar-nav mb-2 mb-lg-0 align-items-center">
             <li className="nav-item me-3">
-              <a className="nav-link position-relative" href="#">
+              <Link className="nav-link position-relative" to="#">
                 <i className="bi bi-bell fs-5"></i>
                 <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                   3
                 </span>
-              </a>
+              </Link>
             </li>
             <li className="nav-item dropdown">
               <a className="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
@@ -33,10 +34,10 @@ const Topbar: React.FC = () => {
                 <span>Admin</span>
               </a>
               <ul className="dropdown-menu dropdown-menu-end">
-                <li><a className="dropdown-item" href="#">Profile</a></li>
-                <li><a className="dropdown-item" href="#">Settings</a></li>
+                <li><Link className="dropdown-item" to="/profile">Profile</Link></li>
+                <li><Link className="dropdown-item" to="/settings">Settings</Link></li>
                 <li><hr className="dropdown-divider" /></li>
-                <li><a className="dropdown-item" href="#">Logout</a></li>
+                <li><Link className="dropdown-item" to="/logout">Logout</Link></li>
               </ul>
             </li>
           </ul>
