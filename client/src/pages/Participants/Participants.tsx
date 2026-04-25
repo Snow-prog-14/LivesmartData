@@ -18,15 +18,16 @@ const Participants = () => {
     "All" | ConfirmationStatus
   >("All");
 
-  // Load from localStorage on mount and merge properly
-  useEffect(() => {
-    const saved = localStorage.getItem('livesmart_participants');
-    if (saved) {
+  // Load and merge data from localStorage
+  const loadMergedData = () => {
+    // 1. Start with mock data
+    let merged = [...mockParticipants];
+
+    // 2. Apply localStorage overrides/additions
+    const savedParticipants = localStorage.getItem('livesmart_participants');
+    if (savedParticipants) {
       try {
-        const localParticipants: Participant[] = JSON.parse(saved);
-        
-        // Merge: local version overrides mock version if IDs match
-        const merged = [...mockParticipants];
+        const localParticipants: Participant[] = JSON.parse(savedParticipants);
         localParticipants.forEach(lp => {
           const index = merged.findIndex(mp => mp.id === lp.id);
           if (index !== -1) {
@@ -35,13 +36,51 @@ const Participants = () => {
             merged.push(lp);
           }
         });
-        
-        setAllParticipants(merged);
       } catch (e) {
         console.error("Failed to parse local participants", e);
       }
     }
+
+    // 3. Remove deleted participants
+    const deletedIdsRaw = localStorage.getItem('livesmart_deleted_participant_ids');
+    if (deletedIdsRaw) {
+      try {
+        const deletedIds: string[] = JSON.parse(deletedIdsRaw);
+        merged = merged.filter(p => !deletedIds.includes(p.id));
+      } catch (e) {
+        console.error("Failed to parse deleted IDs", e);
+      }
+    }
+
+    setAllParticipants(merged);
+  };
+
+  useEffect(() => {
+    loadMergedData();
   }, []);
+
+  const handleDelete = (id: string, name: string) => {
+    if (window.confirm(`Are you sure you want to delete this participant: ${name}?`)) {
+      // 1. Add to deleted IDs list
+      const deletedIdsRaw = localStorage.getItem('livesmart_deleted_participant_ids');
+      const deletedIds: string[] = deletedIdsRaw ? JSON.parse(deletedIdsRaw) : [];
+      if (!deletedIds.includes(id)) {
+        deletedIds.push(id);
+        localStorage.setItem('livesmart_deleted_participant_ids', JSON.stringify(deletedIds));
+      }
+
+      // 2. Remove from active localStorage participants if it exists there
+      const savedParticipants = localStorage.getItem('livesmart_participants');
+      if (savedParticipants) {
+        const localParticipants: Participant[] = JSON.parse(savedParticipants);
+        const updatedLocal = localParticipants.filter(p => p.id !== id);
+        localStorage.setItem('livesmart_participants', JSON.stringify(updatedLocal));
+      }
+
+      // 3. Refresh UI state
+      loadMergedData();
+    }
+  };
 
   const programs = useMemo(() => {
     return ["All", ...new Set(allParticipants.map((p) => p.program))];
@@ -299,17 +338,24 @@ const Participants = () => {
                           <Link
                             to={`/participants/${participant.id}`}
                             className="btn btn-sm btn-outline-primary"
+                            title="View"
                           >
-                            <i className="bi bi-eye me-1"></i>
-                            View
+                            <i className="bi bi-eye"></i>
                           </Link>
                           <Link
                             to={`/participants/edit/${participant.id}`}
                             className="btn btn-sm btn-outline-secondary"
+                            title="Edit"
                           >
-                            <i className="bi bi-pencil me-1"></i>
-                            Edit
+                            <i className="bi bi-pencil"></i>
                           </Link>
+                          <button 
+                            className="btn btn-sm btn-outline-danger" 
+                            title="Delete"
+                            onClick={() => handleDelete(participant.id, participant.participantName)}
+                          >
+                            <i className="bi bi-trash"></i>
+                          </button>
                         </div>
                       </td>
                     </tr>
