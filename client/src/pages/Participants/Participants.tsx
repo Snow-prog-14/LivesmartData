@@ -18,13 +18,25 @@ const Participants = () => {
     "All" | ConfirmationStatus
   >("All");
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount and merge properly
   useEffect(() => {
     const saved = localStorage.getItem('livesmart_participants');
     if (saved) {
       try {
-        const localParticipants = JSON.parse(saved);
-        setAllParticipants([...mockParticipants, ...localParticipants]);
+        const localParticipants: Participant[] = JSON.parse(saved);
+        
+        // Merge: local version overrides mock version if IDs match
+        const merged = [...mockParticipants];
+        localParticipants.forEach(lp => {
+          const index = merged.findIndex(mp => mp.id === lp.id);
+          if (index !== -1) {
+            merged[index] = lp;
+          } else {
+            merged.push(lp);
+          }
+        });
+        
+        setAllParticipants(merged);
       } catch (e) {
         console.error("Failed to parse local participants", e);
       }
@@ -291,10 +303,13 @@ const Participants = () => {
                             <i className="bi bi-eye me-1"></i>
                             View
                           </Link>
-                          <button className="btn btn-sm btn-outline-secondary">
+                          <Link
+                            to={`/participants/edit/${participant.id}`}
+                            className="btn btn-sm btn-outline-secondary"
+                          >
                             <i className="bi bi-pencil me-1"></i>
                             Edit
-                          </button>
+                          </Link>
                         </div>
                       </td>
                     </tr>
