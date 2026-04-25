@@ -1,6 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { mockParticipants } from "../../mock/participants";
 import type {
   ConfirmationStatus,
   Participant,
@@ -10,9 +9,14 @@ import {
   getParticipantComputedBalance, 
   getParticipantComputedPaymentStatus 
 } from "../../utils/paymentSummary";
+import { getAllParticipants } from "../../utils/participantStorage";
+import { 
+  getParticipantComputedConfirmationStatus, 
+  getParticipantComputedCallStatus 
+} from "../../utils/confirmationSummary";
 
 const Participants = () => {
-  const [allParticipants, setAllParticipants] = useState<Participant[]>(mockParticipants);
+  const [allParticipants, setAllParticipants] = useState<Participant[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [programFilter, setProgramFilter] = useState("All");
   const [paymentStatusFilter, setPaymentStatusFilter] = useState<
@@ -24,39 +28,7 @@ const Participants = () => {
 
   // Load and merge data from localStorage
   const loadMergedData = () => {
-    // 1. Start with mock data
-    let merged = [...mockParticipants];
-
-    // 2. Apply localStorage overrides/additions
-    const savedParticipants = localStorage.getItem('livesmart_participants');
-    if (savedParticipants) {
-      try {
-        const localParticipants: Participant[] = JSON.parse(savedParticipants);
-        localParticipants.forEach(lp => {
-          const index = merged.findIndex(mp => mp.id === lp.id);
-          if (index !== -1) {
-            merged[index] = lp;
-          } else {
-            merged.push(lp);
-          }
-        });
-      } catch (e) {
-        console.error("Failed to parse local participants", e);
-      }
-    }
-
-    // 3. Remove deleted participants
-    const deletedIdsRaw = localStorage.getItem('livesmart_deleted_participant_ids');
-    if (deletedIdsRaw) {
-      try {
-        const deletedIds: string[] = JSON.parse(deletedIdsRaw);
-        merged = merged.filter(p => !deletedIds.includes(p.id));
-      } catch (e) {
-        console.error("Failed to parse deleted IDs", e);
-      }
-    }
-
-    setAllParticipants(merged);
+    setAllParticipants(getAllParticipants());
   };
 
   useEffect(() => {
@@ -96,6 +68,7 @@ const Participants = () => {
       
       // Compute values for filtering and display
       const computedPaymentStatus = getParticipantComputedPaymentStatus(participant);
+      const computedConfStatus = getParticipantComputedConfirmationStatus(participant);
 
       const matchesSearch =
         participant.receiptNo.toLowerCase().includes(searchValue) ||
@@ -113,7 +86,7 @@ const Participants = () => {
 
       const matchesConfirmationStatus =
         confirmationStatusFilter === "All" ||
-        participant.confirmationStatus === confirmationStatusFilter;
+        computedConfStatus === confirmationStatusFilter;
 
       return (
         matchesSearch &&
@@ -150,9 +123,9 @@ const Participants = () => {
       case "Pending":
         return "bg-warning text-dark";
       case "Not Responding":
-        return "bg-danger";
+        return "bg-info text-dark";
       case "Cancelled":
-        return "bg-secondary";
+        return "bg-danger";
       default:
         return "bg-secondary";
     }
@@ -280,6 +253,8 @@ const Participants = () => {
                   filteredParticipants.map((participant: Participant) => {
                     const computedStatus = getParticipantComputedPaymentStatus(participant);
                     const computedBalance = getParticipantComputedBalance(participant);
+                    const computedConfStatus = getParticipantComputedConfirmationStatus(participant);
+                    const computedCallStatus = getParticipantComputedCallStatus(participant);
 
                     return (
                       <tr key={participant.id}>
@@ -335,14 +310,14 @@ const Participants = () => {
                         <td>
                           <span
                             className={`badge ${getConfirmationBadgeClass(
-                              participant.confirmationStatus,
+                              computedConfStatus,
                             )}`}
                           >
-                            {participant.confirmationStatus}
+                            {computedConfStatus}
                           </span>
                         </td>
 
-                        <td>{participant.callStatus}</td>
+                        <td>{computedCallStatus}</td>
 
                         <td className="text-center pe-4">
                           <div className="btn-group">

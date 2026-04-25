@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { mockParticipants } from "../../mock/participants";
 import type { Participant } from "../../mock/participants";
 import { 
   getParticipantPayments, 
@@ -8,42 +7,21 @@ import {
   getParticipantComputedBalance, 
   getParticipantComputedPaymentStatus 
 } from "../../utils/paymentSummary";
+import { getAllParticipants } from "../../utils/participantStorage";
+import { 
+  getParticipantConfirmations, 
+  getParticipantComputedConfirmationStatus, 
+  getParticipantComputedCallStatus 
+} from "../../utils/confirmationSummary";
+import { getParticipantContactLogs } from "../../utils/contactLogSummary";
 
 const ParticipantDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
   // Load and merge data to find the correct participant
   const participant = useMemo(() => {
-    let merged = [...mockParticipants];
-    const savedParticipants = localStorage.getItem('livesmart_participants');
-    if (savedParticipants) {
-      try {
-        const localParticipants: Participant[] = JSON.parse(savedParticipants);
-        localParticipants.forEach(lp => {
-          const index = merged.findIndex(mp => mp.id === lp.id);
-          if (index !== -1) {
-            merged[index] = lp;
-          } else {
-            merged.push(lp);
-          }
-        });
-      } catch (e) {
-        console.error("Failed to parse local participants", e);
-      }
-    }
-    
-    // Check if deleted
-    const deletedIdsRaw = localStorage.getItem('livesmart_deleted_participant_ids');
-    if (deletedIdsRaw) {
-      try {
-        const deletedIds: string[] = JSON.parse(deletedIdsRaw);
-        if (deletedIds.includes(id || "")) return null;
-      } catch (e) {
-        console.error("Failed to parse deleted IDs", e);
-      }
-    }
-
-    return merged.find((p) => p.id === id);
+    const all = getAllParticipants();
+    return all.find((p) => p.id === id);
   }, [id]);
 
   if (!participant) {
@@ -62,7 +40,11 @@ const ParticipantDetails: React.FC = () => {
   const payments = getParticipantPayments(participant.id);
   const totalPaid = getParticipantTotalPaid(participant.id);
   const computedBalance = getParticipantComputedBalance(participant);
-  const computedStatus = getParticipantComputedPaymentStatus(participant);
+  const computedPaymentStatus = getParticipantComputedPaymentStatus(participant);
+  const computedConfStatus = getParticipantComputedConfirmationStatus(participant);
+  const computedCallStatus = getParticipantComputedCallStatus(participant);
+  const confirmationRecords = getParticipantConfirmations(participant.id);
+  const contactLogs = getParticipantContactLogs(participant.id);
 
   const getBadgeClass = (status: string) => {
     switch (status) {
@@ -74,11 +56,11 @@ const ParticipantDetails: React.FC = () => {
         return "bg-warning text-dark";
       case "Unpaid":
       case "Not Responding":
-        return "bg-danger";
+        return "bg-info text-dark";
       case "Cancelled":
-        return "bg-secondary";
+        return "bg-danger";
       default:
-        return "bg-info";
+        return "bg-secondary";
     }
   };
 
@@ -105,7 +87,7 @@ const ParticipantDetails: React.FC = () => {
             </ol>
           </nav>
           <h2 className="fw-bold mb-1">{participant.participantName}</h2>
-          <div className="d-flex align-items-center gap-2">
+          <div className="d-flex align-items-center gap-2 flex-wrap">
             <span className="text-muted">
               Receipt:{" "}
               <span className="text-primary fw-medium">
@@ -117,14 +99,14 @@ const ParticipantDetails: React.FC = () => {
               Program: <span className="fw-medium">{participant.program}</span>
             </span>
             <span
-              className={`badge ${getBadgeClass(computedStatus)} ms-2`}
+              className={`badge ${getBadgeClass(computedPaymentStatus)} ms-2`}
             >
-              {computedStatus}
+              Payment: {computedPaymentStatus}
             </span>
             <span
-              className={`badge ${getBadgeClass(participant.confirmationStatus)}`}
+              className={`badge ${getBadgeClass(computedConfStatus)}`}
             >
-              {participant.confirmationStatus}
+              Conf: {computedConfStatus}
             </span>
           </div>
         </div>
@@ -443,8 +425,8 @@ const ParticipantDetails: React.FC = () => {
                       </div>
                       <div className="d-flex justify-content-between border-top pt-2">
                         <span>Status:</span>
-                        <span className={`badge ${getBadgeClass(computedStatus)}`}>
-                          {computedStatus}
+                        <span className={`badge ${getBadgeClass(computedPaymentStatus)}`}>
+                          {computedPaymentStatus}
                         </span>
                       </div>
                     </div>
@@ -455,71 +437,99 @@ const ParticipantDetails: React.FC = () => {
 
             {/* Confirmation Tab */}
             <div className="tab-pane fade" id="confirmation" role="tabpanel">
-              <div className="row g-4">
+              <div className="row g-4 mb-4">
                 <div className="col-md-4">
                   <label className="text-muted small d-block">
-                    Confirmation Status
+                    Current Computed Status
                   </label>
-                  <span
-                    className={`badge ${getBadgeClass(participant.confirmationStatus)}`}
-                  >
-                    {participant.confirmationStatus}
+                  <span className={`badge ${getBadgeClass(computedConfStatus)}`}>
+                    {computedConfStatus}
                   </span>
                 </div>
                 <div className="col-md-4">
                   <label className="text-muted small d-block">
-                    Final Confirmation
+                    Current Call Status
                   </label>
-                  <span>
-                    {participant.confirmationStatus === "Confirmed"
-                      ? "Yes"
-                      : "No"}
-                  </span>
+                  <span className="text-primary fw-bold">{computedCallStatus}</span>
                 </div>
-                <div className="col-md-4">
-                  <label className="text-muted small d-block">
-                    Call Status
-                  </label>
-                  <span className="text-primary">{participant.callStatus}</span>
-                </div>
-                <div className="col-md-4">
-                  <label className="text-muted small d-block">
-                    Date Confirmation
-                  </label>
-                  <span>2024-05-20 (Example)</span>
-                </div>
-                <div className="col-md-4">
-                  <label className="text-muted small d-block">
-                    Confirm Via
-                  </label>
-                  <span>WhatsApp / Phone</span>
-                </div>
+              </div>
+
+              <h6 className="fw-bold mb-3">Confirmation History</h6>
+              <div className="table-responsive">
+                <table className="table table-sm table-bordered">
+                  <thead className="table-light">
+                    <tr>
+                      <th>Period</th>
+                      <th>Status</th>
+                      <th>Final</th>
+                      <th>Date</th>
+                      <th>Via</th>
+                      <th>Call Status</th>
+                      <th>Response</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {confirmationRecords.length > 0 ? (
+                      confirmationRecords.map(rec => (
+                        <tr key={rec.id}>
+                          <td>{rec.confirmationPeriod}</td>
+                          <td>
+                            <span className={`badge ${getBadgeClass(rec.confirmationStatus)}`}>
+                              {rec.confirmationStatus}
+                            </span>
+                          </td>
+                          <td>{rec.finalConfirmation}</td>
+                          <td>{rec.dateConfirmation}</td>
+                          <td>{rec.confirmVia}</td>
+                          <td>{rec.callStatus}</td>
+                          <td>{rec.response}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={7} className="text-center py-3 text-muted">
+                          No confirmation history found.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
 
             {/* Logs Tab */}
             <div className="tab-pane fade" id="logs" role="tabpanel">
               <div className="table-responsive">
-                <table className="table table-hover table-sm">
+                <table className="table table-hover table-sm border">
                   <thead className="table-light">
                     <tr>
                       <th>Type</th>
                       <th>Channel</th>
                       <th>Date Sent</th>
                       <th>Response</th>
+                      <th>Call Status</th>
                       <th>Notes</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {participant.contactLogs.map((log, index) => (
-                      <tr key={index}>
-                        <td>{log.messageType}</td>
-                        <td>{log.channel}</td>
-                        <td>{log.dateSent}</td>
-                        <td>{log.response}</td>
-                        <td>{log.notes}</td>
+                    {contactLogs.length > 0 ? (
+                      contactLogs.map((log) => (
+                        <tr key={log.id}>
+                          <td>{log.messageType}</td>
+                          <td>{log.channel}</td>
+                          <td>{log.dateSent}</td>
+                          <td>{log.response}</td>
+                          <td>{log.callStatus}</td>
+                          <td>{log.notes}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={6} className="text-center py-3 text-muted">
+                          No contact logs found.
+                        </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
