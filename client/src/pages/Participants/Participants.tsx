@@ -1,97 +1,177 @@
-import React, { useState } from 'react';
-import { mockParticipants, Participant } from '../../mock/participants';
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { mockParticipants } from "../../mock/participants";
+import type {
+  ConfirmationStatus,
+  Participant,
+  PaymentStatus,
+} from "../../mock/participants";
 
-const Participants: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [programFilter, setProgramFilter] = useState('');
-  const [paymentFilter, setPaymentFilter] = useState('');
-  const [confirmationFilter, setConfirmationFilter] = useState('');
+const Participants = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [programFilter, setProgramFilter] = useState("All");
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState<
+    "All" | PaymentStatus
+  >("All");
+  const [confirmationStatusFilter, setConfirmationStatusFilter] = useState<
+    "All" | ConfirmationStatus
+  >("All");
 
-  // Filtering logic
-  const filteredParticipants = mockParticipants.filter((p) => {
-    const matchesSearch = p.participantName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         p.receiptNo.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesProgram = programFilter === '' || p.program === programFilter;
-    const matchesPayment = paymentFilter === '' || p.paymentStatus === paymentFilter;
-    const matchesConfirmation = confirmationFilter === '' || p.confirmationStatus === confirmationFilter;
+  const programs = useMemo(() => {
+    return ["All", ...new Set(mockParticipants.map((p) => p.program))];
+  }, []);
 
-    return matchesSearch && matchesProgram && matchesPayment && matchesConfirmation;
-  });
+  const filteredParticipants = useMemo(() => {
+    return mockParticipants.filter((participant: Participant) => {
+      const searchValue = searchTerm.toLowerCase();
 
-  const getPaymentBadgeClass = (status: Participant['paymentStatus']) => {
+      const matchesSearch =
+        participant.receiptNo.toLowerCase().includes(searchValue) ||
+        participant.participantName.toLowerCase().includes(searchValue) ||
+        participant.nickname.toLowerCase().includes(searchValue) ||
+        participant.participantEmail.toLowerCase().includes(searchValue) ||
+        participant.participantNumber.toLowerCase().includes(searchValue);
+
+      const matchesProgram =
+        programFilter === "All" || participant.program === programFilter;
+
+      const matchesPaymentStatus =
+        paymentStatusFilter === "All" ||
+        participant.paymentStatus === paymentStatusFilter;
+
+      const matchesConfirmationStatus =
+        confirmationStatusFilter === "All" ||
+        participant.confirmationStatus === confirmationStatusFilter;
+
+      return (
+        matchesSearch &&
+        matchesProgram &&
+        matchesPaymentStatus &&
+        matchesConfirmationStatus
+      );
+    });
+  }, [
+    searchTerm,
+    programFilter,
+    paymentStatusFilter,
+    confirmationStatusFilter,
+  ]);
+
+  const getPaymentBadgeClass = (status: PaymentStatus) => {
     switch (status) {
-      case 'Paid': return 'bg-success';
-      case 'Partial': return 'bg-warning text-dark';
-      case 'Unpaid': return 'bg-danger';
-      default: return 'bg-secondary';
+      case "Paid":
+        return "bg-success";
+      case "Partial":
+        return "bg-warning text-dark";
+      case "Unpaid":
+        return "bg-danger";
+      default:
+        return "bg-secondary";
     }
   };
 
-  const getConfirmationBadgeClass = (status: Participant['confirmationStatus']) => {
+  const getConfirmationBadgeClass = (status: ConfirmationStatus) => {
     switch (status) {
-      case 'Confirmed': return 'bg-success';
-      case 'Pending': return 'bg-warning text-dark';
-      case 'Not Responding': return 'bg-danger';
-      case 'Cancelled': return 'bg-secondary';
-      default: return 'bg-info';
+      case "Confirmed":
+        return "bg-success";
+      case "Pending":
+        return "bg-warning text-dark";
+      case "Not Responding":
+        return "bg-danger";
+      case "Cancelled":
+        return "bg-secondary";
+      default:
+        return "bg-secondary";
     }
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-PH", {
+      style: "currency",
+      currency: "PHP",
+    }).format(amount);
   };
 
   return (
-    <div className="container-fluid py-4">
-      <div className="mb-4">
-        <h2 className="fw-bold">Participants</h2>
-        <p className="text-muted">Manage and view all registered participants for current programs.</p>
+    <div className="container-fluid">
+      <div className="d-flex justify-content-between align-items-start mb-4">
+        <div>
+          <h1 className="fw-bold mb-1">Participants</h1>
+          <p className="text-muted mb-0">
+            Manage participant registration, payment, and confirmation records.
+          </p>
+        </div>
+
+        <button className="btn btn-primary">
+          <i className="bi bi-plus-lg me-2"></i>
+          Add Participant
+        </button>
       </div>
 
-      {/* Filters Section */}
       <div className="card border-0 shadow-sm mb-4">
         <div className="card-body">
           <div className="row g-3">
-            <div className="col-md-4">
-              <label className="form-label small fw-bold">Search</label>
-              <input 
-                type="text" 
-                className="form-control" 
-                placeholder="Search by name or receipt..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+            <div className="col-12 col-lg-4">
+              <label className="form-label fw-semibold">Search</label>
+              <div className="input-group">
+                <span className="input-group-text bg-white">
+                  <i className="bi bi-search"></i>
+                </span>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Search receipt, name, email, or number..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
-            <div className="col-md-2">
-              <label className="form-label small fw-bold">Program</label>
-              <select 
-                className="form-select" 
+
+            <div className="col-12 col-md-4 col-lg-3">
+              <label className="form-label fw-semibold">Program</label>
+              <select
+                className="form-select"
                 value={programFilter}
                 onChange={(e) => setProgramFilter(e.target.value)}
               >
-                <option value="">All Programs</option>
-                <option value="Youth Leadership">Youth Leadership</option>
-                <option value="Creative Writing">Creative Writing</option>
-                <option value="Science Exploration">Science Exploration</option>
+                {programs.map((program) => (
+                  <option key={program} value={program}>
+                    {program}
+                  </option>
+                ))}
               </select>
             </div>
-            <div className="col-md-3">
-              <label className="form-label small fw-bold">Payment Status</label>
-              <select 
+
+            <div className="col-12 col-md-4 col-lg-2">
+              <label className="form-label fw-semibold">Payment</label>
+              <select
                 className="form-select"
-                value={paymentFilter}
-                onChange={(e) => setPaymentFilter(e.target.value)}
+                value={paymentStatusFilter}
+                onChange={(e) =>
+                  setPaymentStatusFilter(
+                    e.target.value as "All" | PaymentStatus,
+                  )
+                }
               >
-                <option value="">All Status</option>
+                <option value="All">All</option>
                 <option value="Paid">Paid</option>
                 <option value="Partial">Partial</option>
                 <option value="Unpaid">Unpaid</option>
               </select>
             </div>
-            <div className="col-md-3">
-              <label className="form-label small fw-bold">Confirmation</label>
-              <select 
+
+            <div className="col-12 col-md-4 col-lg-3">
+              <label className="form-label fw-semibold">Confirmation</label>
+              <select
                 className="form-select"
-                value={confirmationFilter}
-                onChange={(e) => setConfirmationFilter(e.target.value)}
+                value={confirmationStatusFilter}
+                onChange={(e) =>
+                  setConfirmationStatusFilter(
+                    e.target.value as "All" | ConfirmationStatus,
+                  )
+                }
               >
-                <option value="">All Status</option>
+                <option value="All">All</option>
                 <option value="Confirmed">Confirmed</option>
                 <option value="Pending">Pending</option>
                 <option value="Not Responding">Not Responding</option>
@@ -102,7 +182,6 @@ const Participants: React.FC = () => {
         </div>
       </div>
 
-      {/* Participants Table */}
       <div className="card border-0 shadow-sm">
         <div className="card-body p-0">
           <div className="table-responsive">
@@ -119,50 +198,86 @@ const Participants: React.FC = () => {
                   <th>Balance</th>
                   <th>Confirmation</th>
                   <th>Call Status</th>
-                  <th className="pe-4 text-center">Actions</th>
+                  <th className="text-center pe-4">Actions</th>
                 </tr>
               </thead>
+
               <tbody>
                 {filteredParticipants.length > 0 ? (
-                  filteredParticipants.map((p) => (
-                    <tr key={p.id}>
-                      <td className="ps-4 fw-medium text-primary">{p.receiptNo}</td>
-                      <td>
-                        <div className="fw-bold">{p.participantName}</div>
-                        <small className="text-muted">{p.nickname}</small>
-                        {p.hasAllergyNotes && (
-                          <span className="ms-2 badge bg-info-subtle text-info rounded-pill" style={{ fontSize: '0.65rem' }}>
-                            <i className="bi bi-exclamation-triangle-fill me-1"></i>Allergy
-                          </span>
-                        )}
+                  filteredParticipants.map((participant: Participant) => (
+                    <tr key={participant.id}>
+                      <td className="ps-4 fw-semibold">
+                        {participant.receiptNo}
                       </td>
-                      <td>{p.program}</td>
-                      <td>{p.intake}</td>
-                      <td>{p.cityOfCamp}</td>
+
                       <td>
-                        <div className="small">{p.participantNumber}</div>
-                        <div className="small text-muted">{p.participantEmail}</div>
+                        <div className="fw-semibold">
+                          {participant.participantName}
+                          {participant.hasAllergyNotes && (
+                            <span className="badge bg-info-subtle text-info-emphasis ms-2">
+                              Allergy
+                            </span>
+                          )}
+                        </div>
+                        <small className="text-muted">
+                          Nickname: {participant.nickname}
+                        </small>
                       </td>
+
+                      <td>{participant.program}</td>
+                      <td>{participant.intake}</td>
+                      <td>{participant.cityOfCamp}</td>
+
                       <td>
-                        <span className={`badge ${getPaymentBadgeClass(p.paymentStatus)}`}>
-                          {p.paymentStatus}
+                        <div>{participant.participantNumber}</div>
+                        <small className="text-muted">
+                          {participant.participantEmail}
+                        </small>
+                      </td>
+
+                      <td>
+                        <span
+                          className={`badge ${getPaymentBadgeClass(
+                            participant.paymentStatus,
+                          )}`}
+                        >
+                          {participant.paymentStatus}
                         </span>
                       </td>
-                      <td className="fw-bold text-danger">
-                        {p.balance > 0 ? `$${p.balance}` : '-'}
+
+                      <td
+                        className={
+                          participant.balance > 0
+                            ? "fw-semibold text-danger"
+                            : "fw-semibold text-success"
+                        }
+                      >
+                        {formatCurrency(participant.balance)}
                       </td>
+
                       <td>
-                        <span className={`badge ${getConfirmationBadgeClass(p.confirmationStatus)}`}>
-                          {p.confirmationStatus}
+                        <span
+                          className={`badge ${getConfirmationBadgeClass(
+                            participant.confirmationStatus,
+                          )}`}
+                        >
+                          {participant.confirmationStatus}
                         </span>
                       </td>
-                      <td className="small">{p.callStatus}</td>
-                      <td className="pe-4 text-center">
+
+                      <td>{participant.callStatus}</td>
+
+                      <td className="text-center pe-4">
                         <div className="btn-group">
-                          <button className="btn btn-sm btn-outline-secondary" title="View">
+                          <Link
+                            to={`/participants/${participant.id}`}
+                            className="btn btn-sm btn-outline-primary"
+                          >
+                            <i className="bi bi-eye me-1"></i>
                             View
-                          </button>
-                          <button className="btn btn-sm btn-outline-primary" title="Edit">
+                          </Link>
+                          <button className="btn btn-sm btn-outline-secondary">
+                            <i className="bi bi-pencil me-1"></i>
                             Edit
                           </button>
                         </div>
@@ -172,7 +287,8 @@ const Participants: React.FC = () => {
                 ) : (
                   <tr>
                     <td colSpan={11} className="text-center py-5 text-muted">
-                      No participants found matching your filters.
+                      <i className="bi bi-search fs-3 d-block mb-2"></i>
+                      No participants found.
                     </td>
                   </tr>
                 )}
@@ -181,6 +297,11 @@ const Participants: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <p className="text-muted mt-3 mb-0">
+        Showing {filteredParticipants.length} of {mockParticipants.length}{" "}
+        participants.
+      </p>
     </div>
   );
 };

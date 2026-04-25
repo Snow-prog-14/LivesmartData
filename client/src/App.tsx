@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import DashboardLayout from './layouts/DashboardLayout';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Participants from './pages/Participants/Participants';
+import ParticipantDetails from './pages/Participants/ParticipantDetails';
 import Registration from './pages/Registration/Registration';
 import Payments from './pages/Payments/Payments';
 import Reports from './pages/Reports/Reports';
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="participants" element={<Participants />} />
+          <Route path="participants/:id" element={<ParticipantDetails />} />
           <Route path="registration" element={<Registration />} />
           <Route path="payments" element={<Payments />} />
           <Route path="reports" element={<Reports />} />
