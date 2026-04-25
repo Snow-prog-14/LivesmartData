@@ -1,0 +1,22 @@
+/* Custom application styles */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.nav-link {
+  transition: all 0.2s ease;
+}
+
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Sidebar active link custom style if needed beyond bootstrap defaults */
+.nav-link.active {
+  font-weight: 500;
+}

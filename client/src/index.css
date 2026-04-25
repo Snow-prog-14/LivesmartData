@@ -1,0 +1,14 @@
+:root {
+  --bs-body-bg: #f8f9fa;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+}
