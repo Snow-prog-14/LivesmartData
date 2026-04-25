@@ -1,17 +1,16 @@
 import React, { useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import type { Participant } from "../../mock/participants";
-import { 
-  getParticipantPayments, 
-  getParticipantTotalPaid, 
-  getParticipantComputedBalance, 
-  getParticipantComputedPaymentStatus 
+import {
+  getParticipantPayments,
+  getParticipantTotalPaid,
+  getParticipantComputedBalance,
+  getParticipantComputedPaymentStatus,
 } from "../../utils/paymentSummary";
 import { getAllParticipants } from "../../utils/participantStorage";
-import { 
-  getParticipantConfirmations, 
-  getParticipantComputedConfirmationStatus, 
-  getParticipantComputedCallStatus 
+import {
+  getParticipantConfirmations,
+  getParticipantComputedConfirmationStatus,
+  getParticipantComputedCallStatus,
 } from "../../utils/confirmationSummary";
 import { getParticipantContactLogs } from "../../utils/contactLogSummary";
 
@@ -40,8 +39,10 @@ const ParticipantDetails: React.FC = () => {
   const payments = getParticipantPayments(participant.id);
   const totalPaid = getParticipantTotalPaid(participant.id);
   const computedBalance = getParticipantComputedBalance(participant);
-  const computedPaymentStatus = getParticipantComputedPaymentStatus(participant);
-  const computedConfStatus = getParticipantComputedConfirmationStatus(participant);
+  const computedPaymentStatus =
+    getParticipantComputedPaymentStatus(participant);
+  const computedConfStatus =
+    getParticipantComputedConfirmationStatus(participant);
   const computedCallStatus = getParticipantComputedCallStatus(participant);
   const confirmationRecords = getParticipantConfirmations(participant.id);
   const contactLogs = getParticipantContactLogs(participant.id);
@@ -103,9 +104,7 @@ const ParticipantDetails: React.FC = () => {
             >
               Payment: {computedPaymentStatus}
             </span>
-            <span
-              className={`badge ${getBadgeClass(computedConfStatus)}`}
-            >
+            <span className={`badge ${getBadgeClass(computedConfStatus)}`}>
               Conf: {computedConfStatus}
             </span>
           </div>
@@ -391,7 +390,9 @@ const ParticipantDetails: React.FC = () => {
                       payments.map((pay) => (
                         <tr key={pay.id}>
                           <td>{pay.paymentNumber}</td>
-                          <td className="fw-bold">{formatCurrency(pay.amount)}</td>
+                          <td className="fw-bold">
+                            {formatCurrency(pay.amount)}
+                          </td>
                           <td>{pay.modeOfPayment}</td>
                           <td>{pay.paymentDate}</td>
                           <td className="text-muted">{pay.trackingNumber}</td>
@@ -425,7 +426,9 @@ const ParticipantDetails: React.FC = () => {
                       </div>
                       <div className="d-flex justify-content-between border-top pt-2">
                         <span>Status:</span>
-                        <span className={`badge ${getBadgeClass(computedPaymentStatus)}`}>
+                        <span
+                          className={`badge ${getBadgeClass(computedPaymentStatus)}`}
+                        >
                           {computedPaymentStatus}
                         </span>
                       </div>
@@ -442,7 +445,9 @@ const ParticipantDetails: React.FC = () => {
                   <label className="text-muted small d-block">
                     Current Computed Status
                   </label>
-                  <span className={`badge ${getBadgeClass(computedConfStatus)}`}>
+                  <span
+                    className={`badge ${getBadgeClass(computedConfStatus)}`}
+                  >
                     {computedConfStatus}
                   </span>
                 </div>
@@ -450,7 +455,9 @@ const ParticipantDetails: React.FC = () => {
                   <label className="text-muted small d-block">
                     Current Call Status
                   </label>
-                  <span className="text-primary fw-bold">{computedCallStatus}</span>
+                  <span className="text-primary fw-bold">
+                    {computedCallStatus}
+                  </span>
                 </div>
               </div>
 
@@ -470,11 +477,13 @@ const ParticipantDetails: React.FC = () => {
                   </thead>
                   <tbody>
                     {confirmationRecords.length > 0 ? (
-                      confirmationRecords.map(rec => (
+                      confirmationRecords.map((rec) => (
                         <tr key={rec.id}>
                           <td>{rec.confirmationPeriod}</td>
                           <td>
-                            <span className={`badge ${getBadgeClass(rec.confirmationStatus)}`}>
+                            <span
+                              className={`badge ${getBadgeClass(rec.confirmationStatus)}`}
+                            >
                               {rec.confirmationStatus}
                             </span>
                           </td>
