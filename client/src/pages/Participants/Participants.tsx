@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { mockParticipants } from "../../mock/participants";
 import type {
@@ -8,6 +8,7 @@ import type {
 } from "../../mock/participants";
 
 const Participants = () => {
+  const [allParticipants, setAllParticipants] = useState<Participant[]>(mockParticipants);
   const [searchTerm, setSearchTerm] = useState("");
   const [programFilter, setProgramFilter] = useState("All");
   const [paymentStatusFilter, setPaymentStatusFilter] = useState<
@@ -17,12 +18,25 @@ const Participants = () => {
     "All" | ConfirmationStatus
   >("All");
 
-  const programs = useMemo(() => {
-    return ["All", ...new Set(mockParticipants.map((p) => p.program))];
+  // Load from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('livesmart_participants');
+    if (saved) {
+      try {
+        const localParticipants = JSON.parse(saved);
+        setAllParticipants([...mockParticipants, ...localParticipants]);
+      } catch (e) {
+        console.error("Failed to parse local participants", e);
+      }
+    }
   }, []);
 
+  const programs = useMemo(() => {
+    return ["All", ...new Set(allParticipants.map((p) => p.program))];
+  }, [allParticipants]);
+
   const filteredParticipants = useMemo(() => {
-    return mockParticipants.filter((participant: Participant) => {
+    return allParticipants.filter((participant: Participant) => {
       const searchValue = searchTerm.toLowerCase();
 
       const matchesSearch =
@@ -51,6 +65,7 @@ const Participants = () => {
       );
     });
   }, [
+    allParticipants,
     searchTerm,
     programFilter,
     paymentStatusFilter,
@@ -102,10 +117,10 @@ const Participants = () => {
           </p>
         </div>
 
-        <button className="btn btn-primary">
+        <Link to="/participants/new" className="btn btn-primary">
           <i className="bi bi-plus-lg me-2"></i>
           Add Participant
-        </button>
+        </Link>
       </div>
 
       <div className="card border-0 shadow-sm mb-4">
@@ -299,7 +314,7 @@ const Participants = () => {
       </div>
 
       <p className="text-muted mt-3 mb-0">
-        Showing {filteredParticipants.length} of {mockParticipants.length}{" "}
+        Showing {filteredParticipants.length} of {allParticipants.length}{" "}
         participants.
       </p>
     </div>
