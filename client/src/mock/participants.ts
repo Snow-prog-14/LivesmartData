@@ -33,6 +33,13 @@ export interface Participant {
   callStatus: string;
   hasAllergyNotes: boolean;
   
+  // New Participant fields
+  tShirtSize: string;
+  gender: string;
+  dateOfBirth: string;
+  age: number;
+  school: string;
+
   // Parents Info
   fatherFirstName: string;
   fatherLastName: string;
@@ -43,18 +50,41 @@ export interface Participant {
   motherEmail: string;
   motherMobile: string;
 
+  // Address fields
+  mailingAddress: string;
+  city: string;
+  state: string;
+  country: string;
+  postalCode: string;
+
   // Registration Info
   signUpYear: string;
+  signedUpYear: string; // duplicate/alternate from requirements
   cityOfPreview: string;
-  introVenue: string;
+  introductoryVenue: string;
+  introVenue: string; // mapping for backwards compatibility if needed
   signUpDate: string;
   keyInDate: string;
   previewTrainer: string;
   seminarPackage: string;
   discounts: string;
   finalPackage: string;
+  
+  // New Registration fields
+  intakeBasedOnRegistration: string;
+  intakeConfirmation: string;
+  previewIC: string;
+  keyInTime: string;
+  status2: string;
 
-  // Lists
+  // Package / Pricing fields
+  previewPayment: number;
+  previewPaymentType: string;
+  previewPaymentTracking: string;
+  whenToPay: string;
+  datesToSendReminders: string;
+
+  // Lists (Managed by other modules)
   paymentHistory: PaymentHistory[];
   contactLogs: ContactLog[];
 
@@ -80,6 +110,11 @@ export const mockParticipants: Participant[] = [
     confirmationStatus: 'Confirmed',
     callStatus: 'Called - Confirmed',
     hasAllergyNotes: false,
+    tShirtSize: 'M',
+    gender: 'Male',
+    dateOfBirth: '2010-05-15',
+    age: 14,
+    school: 'SK Taman Tun',
     fatherFirstName: 'Robert',
     fatherLastName: 'Doe',
     fatherEmail: 'robert.doe@example.com',
@@ -88,8 +123,15 @@ export const mockParticipants: Participant[] = [
     motherLastName: 'Doe',
     motherEmail: 'mary.doe@example.com',
     motherMobile: '012-3334445',
+    mailingAddress: '123, Jalan Bukit',
+    city: 'Kuala Lumpur',
+    state: 'WPKL',
+    country: 'Malaysia',
+    postalCode: '50000',
     signUpYear: '2024',
+    signedUpYear: '2024',
     cityOfPreview: 'Petaling Jaya',
+    introductoryVenue: 'Hotel Armada',
     introVenue: 'Hotel Armada',
     signUpDate: '2024-01-10',
     keyInDate: '2024-01-11',
@@ -97,6 +139,16 @@ export const mockParticipants: Participant[] = [
     seminarPackage: 'Elite Package',
     discounts: 'Early Bird 10%',
     finalPackage: 'Elite (Discounted)',
+    intakeBasedOnRegistration: 'June 2024',
+    intakeConfirmation: 'June 2024',
+    previewIC: 'Ms. Lim',
+    keyInTime: '10:00 AM',
+    status2: 'Registered',
+    previewPayment: 500,
+    previewPaymentType: 'Bank Transfer',
+    previewPaymentTracking: 'TRK-9988',
+    whenToPay: 'On Arrival',
+    datesToSendReminders: '2024-05-01, 2024-05-15',
     paymentHistory: [
       { paymentNo: 'P-001', amount: 1500, mode: 'Online Transfer', date: '2024-01-15', trackingNo: 'TXN-9988' }
     ],
@@ -122,6 +174,11 @@ export const mockParticipants: Participant[] = [
     confirmationStatus: 'Pending',
     callStatus: 'Follow-up needed',
     hasAllergyNotes: true,
+    tShirtSize: 'S',
+    gender: 'Female',
+    dateOfBirth: '2011-08-20',
+    age: 13,
+    school: 'SMK Penang Jaya',
     fatherFirstName: 'William',
     fatherLastName: 'Smith',
     fatherEmail: 'william@example.com',
@@ -130,8 +187,15 @@ export const mockParticipants: Participant[] = [
     motherLastName: 'Smith',
     motherEmail: 'sarah@example.com',
     motherMobile: '011-5544332',
+    mailingAddress: '45, Gurney Drive',
+    city: 'Penang',
+    state: 'Penang',
+    country: 'Malaysia',
+    postalCode: '10000',
     signUpYear: '2024',
+    signedUpYear: '2024',
     cityOfPreview: 'Penang',
+    introductoryVenue: 'Cititel Hotel',
     introVenue: 'Cititel Hotel',
     signUpDate: '2024-02-05',
     keyInDate: '2024-02-06',
@@ -139,6 +203,16 @@ export const mockParticipants: Participant[] = [
     seminarPackage: 'Standard Package',
     discounts: 'None',
     finalPackage: 'Standard',
+    intakeBasedOnRegistration: 'July 2024',
+    intakeConfirmation: 'July 2024',
+    previewIC: 'Mr. Tan',
+    keyInTime: '02:00 PM',
+    status2: 'Partial Payment',
+    previewPayment: 300,
+    previewPaymentType: 'Cash',
+    previewPaymentTracking: 'C-001',
+    whenToPay: 'Installments',
+    datesToSendReminders: '2024-06-01',
     paymentHistory: [
       { paymentNo: 'P-002', amount: 800, mode: 'Credit Card', date: '2024-02-10', trackingNo: 'TXN-1122' }
     ],
