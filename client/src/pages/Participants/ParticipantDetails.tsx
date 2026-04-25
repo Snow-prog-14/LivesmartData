@@ -1,10 +1,50 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { mockParticipants } from "../../mock/participants";
+import type { Participant } from "../../mock/participants";
+import { 
+  getParticipantPayments, 
+  getParticipantTotalPaid, 
+  getParticipantComputedBalance, 
+  getParticipantComputedPaymentStatus 
+} from "../../utils/paymentSummary";
 
 const ParticipantDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const participant = mockParticipants.find((p) => p.id === id);
+
+  // Load and merge data to find the correct participant
+  const participant = useMemo(() => {
+    let merged = [...mockParticipants];
+    const savedParticipants = localStorage.getItem('livesmart_participants');
+    if (savedParticipants) {
+      try {
+        const localParticipants: Participant[] = JSON.parse(savedParticipants);
+        localParticipants.forEach(lp => {
+          const index = merged.findIndex(mp => mp.id === lp.id);
+          if (index !== -1) {
+            merged[index] = lp;
+          } else {
+            merged.push(lp);
+          }
+        });
+      } catch (e) {
+        console.error("Failed to parse local participants", e);
+      }
+    }
+    
+    // Check if deleted
+    const deletedIdsRaw = localStorage.getItem('livesmart_deleted_participant_ids');
+    if (deletedIdsRaw) {
+      try {
+        const deletedIds: string[] = JSON.parse(deletedIdsRaw);
+        if (deletedIds.includes(id || "")) return null;
+      } catch (e) {
+        console.error("Failed to parse deleted IDs", e);
+      }
+    }
+
+    return merged.find((p) => p.id === id);
+  }, [id]);
 
   if (!participant) {
     return (
@@ -17,6 +57,12 @@ const ParticipantDetails: React.FC = () => {
       </div>
     );
   }
+
+  // Computed values
+  const payments = getParticipantPayments(participant.id);
+  const totalPaid = getParticipantTotalPaid(participant.id);
+  const computedBalance = getParticipantComputedBalance(participant);
+  const computedStatus = getParticipantComputedPaymentStatus(participant);
 
   const getBadgeClass = (status: string) => {
     switch (status) {
@@ -34,6 +80,13 @@ const ParticipantDetails: React.FC = () => {
       default:
         return "bg-info";
     }
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-PH", {
+      style: "currency",
+      currency: "PHP",
+    }).format(amount);
   };
 
   return (
@@ -64,9 +117,9 @@ const ParticipantDetails: React.FC = () => {
               Program: <span className="fw-medium">{participant.program}</span>
             </span>
             <span
-              className={`badge ${getBadgeClass(participant.paymentStatus)} ms-2`}
+              className={`badge ${getBadgeClass(computedStatus)} ms-2`}
             >
-              {participant.paymentStatus}
+              {computedStatus}
             </span>
             <span
               className={`badge ${getBadgeClass(participant.confirmationStatus)}`}
@@ -352,15 +405,23 @@ const ParticipantDetails: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {participant.paymentHistory.map((pay, index) => (
-                      <tr key={index}>
-                        <td>{pay.paymentNo}</td>
-                        <td className="fw-bold">${pay.amount}</td>
-                        <td>{pay.mode}</td>
-                        <td>{pay.date}</td>
-                        <td className="text-muted">{pay.trackingNo}</td>
+                    {payments.length > 0 ? (
+                      payments.map((pay) => (
+                        <tr key={pay.id}>
+                          <td>{pay.paymentNumber}</td>
+                          <td className="fw-bold">{formatCurrency(pay.amount)}</td>
+                          <td>{pay.modeOfPayment}</td>
+                          <td>{pay.paymentDate}</td>
+                          <td className="text-muted">{pay.trackingNumber}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={5} className="text-center py-3 text-muted">
+                          No payments recorded for this participant.
+                        </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -371,17 +432,19 @@ const ParticipantDetails: React.FC = () => {
                       <div className="d-flex justify-content-between mb-2">
                         <span>Total Paid:</span>
                         <span className="fw-bold text-success">
-                          $
-                          {participant.paymentHistory.reduce(
-                            (acc, curr) => acc + curr.amount,
-                            0,
-                          )}
+                          {formatCurrency(totalPaid)}
                         </span>
                       </div>
-                      <div className="d-flex justify-content-between">
+                      <div className="d-flex justify-content-between mb-2">
                         <span>Balance:</span>
                         <span className="fw-bold text-danger">
-                          ${participant.balance}
+                          {formatCurrency(computedBalance)}
+                        </span>
+                      </div>
+                      <div className="d-flex justify-content-between border-top pt-2">
+                        <span>Status:</span>
+                        <span className={`badge ${getBadgeClass(computedStatus)}`}>
+                          {computedStatus}
                         </span>
                       </div>
                     </div>

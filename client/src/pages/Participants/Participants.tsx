@@ -6,6 +6,10 @@ import type {
   Participant,
   PaymentStatus,
 } from "../../mock/participants";
+import { 
+  getParticipantComputedBalance, 
+  getParticipantComputedPaymentStatus 
+} from "../../utils/paymentSummary";
 
 const Participants = () => {
   const [allParticipants, setAllParticipants] = useState<Participant[]>(mockParticipants);
@@ -89,6 +93,9 @@ const Participants = () => {
   const filteredParticipants = useMemo(() => {
     return allParticipants.filter((participant: Participant) => {
       const searchValue = searchTerm.toLowerCase();
+      
+      // Compute values for filtering and display
+      const computedPaymentStatus = getParticipantComputedPaymentStatus(participant);
 
       const matchesSearch =
         participant.receiptNo.toLowerCase().includes(searchValue) ||
@@ -102,7 +109,7 @@ const Participants = () => {
 
       const matchesPaymentStatus =
         paymentStatusFilter === "All" ||
-        participant.paymentStatus === paymentStatusFilter;
+        computedPaymentStatus === paymentStatusFilter;
 
       const matchesConfirmationStatus =
         confirmationStatusFilter === "All" ||
@@ -270,96 +277,101 @@ const Participants = () => {
 
               <tbody>
                 {filteredParticipants.length > 0 ? (
-                  filteredParticipants.map((participant: Participant) => (
-                    <tr key={participant.id}>
-                      <td className="ps-4 fw-semibold">
-                        {participant.receiptNo}
-                      </td>
+                  filteredParticipants.map((participant: Participant) => {
+                    const computedStatus = getParticipantComputedPaymentStatus(participant);
+                    const computedBalance = getParticipantComputedBalance(participant);
 
-                      <td>
-                        <div className="fw-semibold">
-                          {participant.participantName}
-                          {participant.hasAllergyNotes && (
-                            <span className="badge bg-info-subtle text-info-emphasis ms-2">
-                              Allergy
-                            </span>
-                          )}
-                        </div>
-                        <small className="text-muted">
-                          Nickname: {participant.nickname}
-                        </small>
-                      </td>
+                    return (
+                      <tr key={participant.id}>
+                        <td className="ps-4 fw-semibold">
+                          {participant.receiptNo}
+                        </td>
 
-                      <td>{participant.program}</td>
-                      <td>{participant.intake}</td>
-                      <td>{participant.cityOfCamp}</td>
+                        <td>
+                          <div className="fw-semibold">
+                            {participant.participantName}
+                            {participant.hasAllergyNotes && (
+                              <span className="badge bg-info-subtle text-info-emphasis ms-2">
+                                Allergy
+                              </span>
+                            )}
+                          </div>
+                          <small className="text-muted">
+                            Nickname: {participant.nickname}
+                          </small>
+                        </td>
 
-                      <td>
-                        <div>{participant.participantNumber}</div>
-                        <small className="text-muted">
-                          {participant.participantEmail}
-                        </small>
-                      </td>
+                        <td>{participant.program}</td>
+                        <td>{participant.intake}</td>
+                        <td>{participant.cityOfCamp}</td>
 
-                      <td>
-                        <span
-                          className={`badge ${getPaymentBadgeClass(
-                            participant.paymentStatus,
-                          )}`}
+                        <td>
+                          <div>{participant.participantNumber}</div>
+                          <small className="text-muted">
+                            {participant.participantEmail}
+                          </small>
+                        </td>
+
+                        <td>
+                          <span
+                            className={`badge ${getPaymentBadgeClass(
+                              computedStatus,
+                            )}`}
+                          >
+                            {computedStatus}
+                          </span>
+                        </td>
+
+                        <td
+                          className={
+                            computedBalance > 0
+                              ? "fw-semibold text-danger"
+                              : "fw-semibold text-success"
+                          }
                         >
-                          {participant.paymentStatus}
-                        </span>
-                      </td>
+                          {formatCurrency(computedBalance)}
+                        </td>
 
-                      <td
-                        className={
-                          participant.balance > 0
-                            ? "fw-semibold text-danger"
-                            : "fw-semibold text-success"
-                        }
-                      >
-                        {formatCurrency(participant.balance)}
-                      </td>
-
-                      <td>
-                        <span
-                          className={`badge ${getConfirmationBadgeClass(
-                            participant.confirmationStatus,
-                          )}`}
-                        >
-                          {participant.confirmationStatus}
-                        </span>
-                      </td>
-
-                      <td>{participant.callStatus}</td>
-
-                      <td className="text-center pe-4">
-                        <div className="btn-group">
-                          <Link
-                            to={`/participants/${participant.id}`}
-                            className="btn btn-sm btn-outline-primary"
-                            title="View"
+                        <td>
+                          <span
+                            className={`badge ${getConfirmationBadgeClass(
+                              participant.confirmationStatus,
+                            )}`}
                           >
-                            <i className="bi bi-eye"></i>
-                          </Link>
-                          <Link
-                            to={`/participants/edit/${participant.id}`}
-                            className="btn btn-sm btn-outline-secondary"
-                            title="Edit"
-                          >
-                            <i className="bi bi-pencil"></i>
-                          </Link>
-                          <button 
-                            className="btn btn-sm btn-outline-danger" 
-                            title="Delete"
-                            onClick={() => handleDelete(participant.id, participant.participantName)}
-                          >
-                            <i className="bi bi-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                            {participant.confirmationStatus}
+                          </span>
+                        </td>
+
+                        <td>{participant.callStatus}</td>
+
+                        <td className="text-center pe-4">
+                          <div className="btn-group">
+                            <Link
+                              to={`/participants/${participant.id}`}
+                              className="btn btn-sm btn-outline-primary"
+                              title="View"
+                            >
+                              <i className="bi bi-eye"></i>
+                            </Link>
+                            <Link
+                              to={`/participants/edit/${participant.id}`}
+                              className="btn btn-sm btn-outline-secondary"
+                              title="Edit"
+                            >
+                              <i className="bi bi-pencil"></i>
+                            </Link>
+                            <button 
+                              className="btn btn-sm btn-outline-danger" 
+                              title="Delete"
+                              onClick={() => handleDelete(participant.id, participant.participantName)}
+                            >
+                              <i className="bi bi-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
                 ) : (
                   <tr>
                     <td colSpan={11} className="text-center py-5 text-muted">
