@@ -1,15 +1,16 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import DashboardLayout from './layouts/DashboardLayout';
-import Dashboard from './pages/Dashboard/Dashboard';
-import Participants from './pages/Participants/Participants';
-import ParticipantDetails from './pages/Participants/ParticipantDetails';
-import AddParticipant from './pages/Participants/AddParticipant';
-import EditParticipant from './pages/Participants/EditParticipant';
-import Registration from './pages/Registration/Registration';
-import Payments from './pages/Payments/Payments';
-import Reports from './pages/Reports/Reports';
-import Settings from './pages/Settings/Settings';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import DashboardLayout from "./layouts/DashboardLayout";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import Participants from "./pages/Participants/Participants";
+import ParticipantDetails from "./pages/Participants/ParticipantDetails";
+import AddParticipant from "./pages/Participants/AddParticipant";
+import EditParticipant from "./pages/Participants/EditParticipant";
+import Registration from "./pages/Registration/Registration";
+import Payments from "./pages/Payments/Payments";
+import Reports from "./pages/Reports/Reports";
+import Settings from "./pages/Settings/Settings";
+import IntroRegistrations from "./pages/IntroRegistrations/IntroRegistrations";
+import "./App.css";
 
 function App() {
   return (
@@ -25,7 +26,17 @@ function App() {
           <Route path="payments" element={<Payments />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
-          <Route path="*" element={<div className="p-4"><h1>404 - Not Found</h1><p>The page you are looking for does not exist.</p><a href="/">Go to Dashboard</a></div>} />
+          <Route
+            path="*"
+            element={
+              <div className="p-4">
+                <h1>404 - Not Found</h1>
+                <p>The page you are looking for does not exist.</p>
+                <a href="/">Go to Dashboard</a>
+              </div>
+            }
+          />
+          <Route path="/intro-registrations" element={<IntroRegistrations />} />
         </Route>
       </Routes>
     </Router>
