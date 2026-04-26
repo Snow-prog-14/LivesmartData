@@ -1,21 +1,26 @@
 import { useMemo, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import type {
   ConfirmationStatus,
   Participant,
   PaymentStatus,
 } from "../../mock/participants";
-import { 
-  getParticipantComputedBalance, 
-  getParticipantComputedPaymentStatus 
+import {
+  getParticipantComputedBalance,
+  getParticipantComputedPaymentStatus,
 } from "../../utils/paymentSummary";
 import { getAllParticipants } from "../../utils/participantStorage";
-import { 
-  getParticipantComputedConfirmationStatus, 
-  getParticipantComputedCallStatus 
+import {
+  getParticipantComputedConfirmationStatus,
+  getParticipantComputedCallStatus,
 } from "../../utils/confirmationSummary";
 
 const Participants = () => {
+  const { campSeason } = useParams();
+
+  const activeCamp = campSeason === "october" ? "October Camp" : "May Camp";
+
+  const activeCampMonth = campSeason === "october" ? "October" : "May";
   const [allParticipants, setAllParticipants] = useState<Participant[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [programFilter, setProgramFilter] = useState("All");
@@ -36,21 +41,35 @@ const Participants = () => {
   }, []);
 
   const handleDelete = (id: string, name: string) => {
-    if (window.confirm(`Are you sure you want to delete this participant: ${name}?`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete this participant: ${name}?`,
+      )
+    ) {
       // 1. Add to deleted IDs list
-      const deletedIdsRaw = localStorage.getItem('livesmart_deleted_participant_ids');
-      const deletedIds: string[] = deletedIdsRaw ? JSON.parse(deletedIdsRaw) : [];
+      const deletedIdsRaw = localStorage.getItem(
+        "livesmart_deleted_participant_ids",
+      );
+      const deletedIds: string[] = deletedIdsRaw
+        ? JSON.parse(deletedIdsRaw)
+        : [];
       if (!deletedIds.includes(id)) {
         deletedIds.push(id);
-        localStorage.setItem('livesmart_deleted_participant_ids', JSON.stringify(deletedIds));
+        localStorage.setItem(
+          "livesmart_deleted_participant_ids",
+          JSON.stringify(deletedIds),
+        );
       }
 
       // 2. Remove from active localStorage participants if it exists there
-      const savedParticipants = localStorage.getItem('livesmart_participants');
+      const savedParticipants = localStorage.getItem("livesmart_participants");
       if (savedParticipants) {
         const localParticipants: Participant[] = JSON.parse(savedParticipants);
-        const updatedLocal = localParticipants.filter(p => p.id !== id);
-        localStorage.setItem('livesmart_participants', JSON.stringify(updatedLocal));
+        const updatedLocal = localParticipants.filter((p) => p.id !== id);
+        localStorage.setItem(
+          "livesmart_participants",
+          JSON.stringify(updatedLocal),
+        );
       }
 
       // 3. Refresh UI state
@@ -65,10 +84,12 @@ const Participants = () => {
   const filteredParticipants = useMemo(() => {
     return allParticipants.filter((participant: Participant) => {
       const searchValue = searchTerm.toLowerCase();
-      
+
       // Compute values for filtering and display
-      const computedPaymentStatus = getParticipantComputedPaymentStatus(participant);
-      const computedConfStatus = getParticipantComputedConfirmationStatus(participant);
+      const computedPaymentStatus =
+        getParticipantComputedPaymentStatus(participant);
+      const computedConfStatus =
+        getParticipantComputedConfirmationStatus(participant);
 
       const matchesSearch =
         participant.receiptNo.toLowerCase().includes(searchValue) ||
@@ -142,9 +163,10 @@ const Participants = () => {
     <div className="container-fluid">
       <div className="d-flex justify-content-between align-items-start mb-4">
         <div>
-          <h1 className="fw-bold mb-1">Participants</h1>
+          <h1 className="fw-bold mb-1">{activeCamp}</h1>{" "}
           <p className="text-muted mb-0">
-            Manage participant registration, payment, and confirmation records.
+            Manage participant registration, payment, and confirmation records
+            for {activeCamp}.
           </p>
         </div>
 
@@ -251,10 +273,14 @@ const Participants = () => {
               <tbody>
                 {filteredParticipants.length > 0 ? (
                   filteredParticipants.map((participant: Participant) => {
-                    const computedStatus = getParticipantComputedPaymentStatus(participant);
-                    const computedBalance = getParticipantComputedBalance(participant);
-                    const computedConfStatus = getParticipantComputedConfirmationStatus(participant);
-                    const computedCallStatus = getParticipantComputedCallStatus(participant);
+                    const computedStatus =
+                      getParticipantComputedPaymentStatus(participant);
+                    const computedBalance =
+                      getParticipantComputedBalance(participant);
+                    const computedConfStatus =
+                      getParticipantComputedConfirmationStatus(participant);
+                    const computedCallStatus =
+                      getParticipantComputedCallStatus(participant);
 
                     return (
                       <tr key={participant.id}>
@@ -335,10 +361,15 @@ const Participants = () => {
                             >
                               <i className="bi bi-pencil"></i>
                             </Link>
-                            <button 
-                              className="btn btn-sm btn-outline-danger" 
+                            <button
+                              className="btn btn-sm btn-outline-danger"
                               title="Delete"
-                              onClick={() => handleDelete(participant.id, participant.participantName)}
+                              onClick={() =>
+                                handleDelete(
+                                  participant.id,
+                                  participant.participantName,
+                                )
+                              }
                             >
                               <i className="bi bi-trash"></i>
                             </button>

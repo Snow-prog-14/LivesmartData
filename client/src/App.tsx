@@ -24,23 +24,26 @@ function App() {
       <Routes>
         <Route path="/" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
-
           <Route
             path="preview"
             element={<Navigate to="/preview/manila" replace />}
           />
           <Route path="preview/:city" element={<IntroRegistrations />} />
-
-          <Route path="participants" element={<Participants />} />
+          <Route
+            path="participants"
+            element={<Navigate to="/participants/camp/may" replace />}
+          />
+          <Route
+            path="participants/camp/:campSeason"
+            element={<Participants />}
+          />{" "}
           <Route path="participants/new" element={<AddParticipant />} />
           <Route path="participants/edit/:id" element={<EditParticipant />} />
           <Route path="participants/:id" element={<ParticipantDetails />} />
-
           <Route path="registration" element={<Registration />} />
           <Route path="payments" element={<Payments />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
-
           <Route
             path="*"
             element={

@@ -29,15 +29,31 @@ const Sidebar: React.FC = () => {
           </NavLink>
         </li>
         <li>
-          <NavLink
-            to="/participants"
-            className={({ isActive }) =>
-              `nav-link ${isActive ? "active" : "link-dark"}`
-            }
-          >
-            <i className="bi bi-people me-2"></i>
-            Participants
-          </NavLink>
+          <div className="nav-item">
+            <div className="nav-link text-uppercase small text-muted fw-bold mt-3">
+              Participants
+            </div>
+
+            <NavLink
+              to="/participants/camp/may"
+              className={({ isActive }) =>
+                `nav-link ps-4 ${isActive ? "active" : "link-dark"}`
+              }
+            >
+              <i className="bi bi-calendar-event me-2"></i>
+              May Camp
+            </NavLink>
+
+            <NavLink
+              to="/participants/camp/october"
+              className={({ isActive }) =>
+                `nav-link ps-4 ${isActive ? "active" : "link-dark"}`
+              }
+            >
+              <i className="bi bi-calendar-event me-2"></i>
+              October Camp
+            </NavLink>
+          </div>
         </li>
         <li>
           <div className="nav-item">
