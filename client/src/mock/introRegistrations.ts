@@ -16,10 +16,18 @@ export type PaymentMethod =
   | "Bank Transfer"
   | "Credit Card";
 
+export interface PreviewChild {
+  name: string;
+  school: string;
+}
+
 export interface IntroRegistration {
   id: number;
   email: string;
   name: string;
+  relationshipWithChildren: string;
+numberOfChildren: number;
+children: PreviewChild[];
   totalPax: number;
   contactNo: string;
   cityOfPreview: string;
@@ -37,17 +45,28 @@ export interface IntroRegistration {
   signUp: IntroSignUp;
   signUpPax: number;
   paymentMethod: PaymentMethod;
+  
 }
 
 export const mockIntroRegistrations: IntroRegistration[] = [
   {
     id: 1,
     email: "maria.santos@example.com",
-    name: "Maria Santos",
-    totalPax: 3,
+name: "Maria Santos",
+relationshipWithChildren: "Mother",
+numberOfChildren: 2,
+children: [
+  {
+    name: "Juan Santos",
+    school: "St. Mary Academy",
+  },
+  {
+    name: "Ana Santos",
+    school: "St. Mary Academy",
+  },
+],    totalPax: 3,
     contactNo: "09171234567",
-    cityOfPreview: "Quezon City",
-    signUpDate: "2026-04-01",
+cityOfPreview: "Manila",    signUpDate: "2026-04-01",
     introSessionDate: "2026-04-05",
     registration: "Registered for introductory session",
     reminder: "Confirmed",
@@ -65,11 +84,17 @@ export const mockIntroRegistrations: IntroRegistration[] = [
   {
     id: 2,
     email: "jose.reyes@example.com",
-    name: "Jose Reyes",
-    totalPax: 2,
+name: "Jose Reyes",
+relationshipWithChildren: "Father",
+numberOfChildren: 1,
+children: [
+  {
+    name: "Marco Reyes",
+    school: "Cebu International School",
+  },
+],    totalPax: 2,
     contactNo: "09281234567",
-    cityOfPreview: "Makati",
-    signUpDate: "2026-04-03",
+cityOfPreview: "Cebu",    signUpDate: "2026-04-03",
     introSessionDate: "2026-04-08",
     registration: "For attendance confirmation",
     reminder: "1D Reminder",
@@ -87,11 +112,17 @@ export const mockIntroRegistrations: IntroRegistration[] = [
   {
     id: 3,
     email: "ana.cruz@example.com",
-    name: "Ana Cruz",
-    totalPax: 4,
+name: "Ana Cruz",
+relationshipWithChildren: "Guardian",
+numberOfChildren: 1,
+children: [
+  {
+    name: "Lia Cruz",
+    school: "Davao Christian High School",
+  },
+],    totalPax: 4,
     contactNo: "09391234567",
-    cityOfPreview: "Manila",
-    signUpDate: "2026-04-04",
+cityOfPreview: "Davao",    signUpDate: "2026-04-04",
     introSessionDate: "2026-04-10",
     registration: "Registered but not yet confirmed",
     reminder: "3D Reminder",

@@ -38,6 +38,9 @@ const paymentMethodOptions: PaymentMethod[] = [
 const defaultFormData: IntroFormData = {
   email: "",
   name: "",
+  relationshipWithChildren: "",
+  numberOfChildren: 1,
+  children: [],
   totalPax: 1,
   contactNo: "",
   cityOfPreview: "",
@@ -90,6 +93,8 @@ const IntroRegistrations = () => {
   );
   const [formData, setFormData] = useState<IntroFormData>(defaultFormData);
   const [error, setError] = useState("");
+  const [selectedRecord, setSelectedRecord] =
+    useState<IntroRegistration | null>(null);
 
   const filteredIntroRegistrations = useMemo(() => {
     return introRegistrations.filter((record) => {
@@ -154,6 +159,9 @@ const IntroRegistrations = () => {
     setFormData({
       email: record.email,
       name: record.name,
+      relationshipWithChildren: record.relationshipWithChildren,
+      numberOfChildren: record.numberOfChildren,
+      children: record.children,
       totalPax: record.totalPax,
       contactNo: record.contactNo,
       cityOfPreview: record.cityOfPreview,
@@ -246,25 +254,6 @@ const IntroRegistrations = () => {
 
   const handleRegisterToCamp = (id: number) => {
     navigate(`/participants/new?introId=${id}`);
-  };
-
-  const getAttendanceBadgeClass = (attendance: IntroAttendance) => {
-    return attendance === "Yes" ? "bg-success" : "bg-secondary";
-  };
-
-  const getSignUpBadgeClass = (signUp: IntroSignUp) => {
-    return signUp === "Yes" ? "bg-primary" : "bg-secondary";
-  };
-
-  const getReminderBadgeClass = (reminder: IntroReminder) => {
-    switch (reminder) {
-      case "Confirmed":
-        return "bg-success";
-      case "Cancelled":
-        return "bg-danger";
-      default:
-        return "bg-warning text-dark";
-    }
   };
 
   return (
@@ -697,77 +686,109 @@ const IntroRegistrations = () => {
           </div>
         </div>
       </div>
+      {selectedRecord && (
+        <div className="card border-0 shadow-sm mb-4">
+          <div className="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 className="mb-0 fw-bold">Preview Details</h5>
 
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-secondary"
+              onClick={() => setSelectedRecord(null)}
+            >
+              Close
+            </button>
+          </div>
+
+          <div className="card-body">
+            <div className="row g-3 mb-4">
+              <div className="col-12 col-md-4">
+                <small className="text-muted">Name of Guardian</small>
+                <div className="fw-semibold">{selectedRecord.name}</div>
+              </div>
+
+              <div className="col-12 col-md-4">
+                <small className="text-muted">
+                  Relationship with the child/ren
+                </small>
+                <div className="fw-semibold">
+                  {selectedRecord.relationshipWithChildren || "—"}
+                </div>
+              </div>
+
+              <div className="col-12 col-md-4">
+                <small className="text-muted">Number of child/ren</small>
+                <div className="fw-semibold">
+                  {selectedRecord.numberOfChildren}
+                </div>
+              </div>
+            </div>
+
+            <h6 className="fw-bold mb-3">Information of child</h6>
+
+            <div className="table-responsive">
+              <table className="table table-sm table-bordered align-middle mb-0">
+                <thead className="table-light">
+                  <tr>
+                    <th>Name</th>
+                    <th>School</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {selectedRecord.children.length > 0 ? (
+                    selectedRecord.children.map((child, index) => (
+                      <tr key={`${child.name}-${index}`}>
+                        <td>{child.name}</td>
+                        <td>{child.school}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={2} className="text-center text-muted">
+                        No child information added.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="card border-0 shadow-sm">
         <div className="card-body p-0">
           <div className="table-responsive">
             <table className="table table-hover align-middle mb-0">
               <thead className="table-light">
                 <tr>
-                  <th className="ps-4">Name</th>
-                  <th>Email</th>
-                  <th>Contact No.</th>
-                  <th>City of Preview</th>
-                  <th>Total Pax</th>
-                  <th>Sign Up Date</th>
-                  <th>Intro Session Date</th>
-                  <th>Reminder</th>
-                  <th>Attendance</th>
-                  <th>Sign Up</th>
-                  <th>Sign Up Pax</th>
-                  <th>Payment Method</th>
-                  <th>Remarks</th>
+                  <th className="ps-4">Name of Guardian</th>
+                  <th>Relationship with the child/ren</th>
+                  <th>Number of child/ren</th>
                   <th className="text-center pe-4">Actions</th>
                 </tr>
               </thead>
-
               <tbody>
                 {filteredIntroRegistrations.length > 0 ? (
                   filteredIntroRegistrations.map((record) => (
                     <tr key={record.id}>
                       <td className="ps-4 fw-semibold">{record.name}</td>
-                      <td>{record.email || "—"}</td>
-                      <td>{record.contactNo}</td>
-                      <td>{record.cityOfPreview}</td>
-                      <td>{record.totalPax}</td>
-                      <td>{record.signUpDate}</td>
-                      <td>{record.introSessionDate}</td>
-                      <td>
-                        <span
-                          className={`badge ${getReminderBadgeClass(
-                            record.reminder,
-                          )}`}
-                        >
-                          {record.reminder}
-                        </span>
-                      </td>
-                      <td>
-                        <span
-                          className={`badge ${getAttendanceBadgeClass(
-                            record.attendance,
-                          )}`}
-                        >
-                          {record.attendance}
-                        </span>
-                      </td>
-                      <td>
-                        <span
-                          className={`badge ${getSignUpBadgeClass(
-                            record.signUp,
-                          )}`}
-                        >
-                          {record.signUp}
-                        </span>
-                      </td>
-                      <td>{record.signUpPax}</td>
-                      <td>{record.paymentMethod}</td>
-                      <td style={{ minWidth: "220px" }}>
-                        {record.remarks || "—"}
-                      </td>
+
+                      <td>{record.relationshipWithChildren || "—"}</td>
+
+                      <td>{record.numberOfChildren}</td>
+
                       <td className="text-center pe-4">
                         <div className="btn-group">
                           <button
                             className="btn btn-sm btn-outline-primary"
+                            onClick={() => setSelectedRecord(record)}
+                          >
+                            View
+                          </button>
+
+                          <button
+                            className="btn btn-sm btn-outline-secondary"
                             onClick={() => handleEditClick(record)}
                           >
                             Edit
@@ -792,7 +813,8 @@ const IntroRegistrations = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={14} className="text-center py-5 text-muted">
+                    <td colSpan={4} className="text-center py-5 text-muted">
+                      {" "}
                       No introductory registrations found.
                     </td>
                   </tr>
