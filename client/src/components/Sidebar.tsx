@@ -28,81 +28,125 @@ const Sidebar: React.FC = () => {
             Dashboard
           </NavLink>
         </li>
+
         <li>
-          <div className="nav-item">
-            <div className="nav-link text-uppercase small text-muted fw-bold mt-3">
-              Participants
-            </div>
-
-            <NavLink
-              to="/participants/camp/may"
-              className={({ isActive }) =>
-                `nav-link ps-4 ${isActive ? "active" : "link-dark"}`
-              }
-            >
-              <i className="bi bi-calendar-event me-2"></i>
-              May Camp
-            </NavLink>
-
-            <NavLink
-              to="/participants/camp/october"
-              className={({ isActive }) =>
-                `nav-link ps-4 ${isActive ? "active" : "link-dark"}`
-              }
-            >
-              <i className="bi bi-calendar-event me-2"></i>
-              October Camp
-            </NavLink>
+          <div className="nav-link text-uppercase small text-muted fw-bold mt-3">
+            Leads
           </div>
-        </li>
-        <li>
-          <div className="nav-item">
-            <div className="nav-link text-uppercase small text-muted fw-bold mt-3">
-              Preview
-            </div>
 
-            <NavLink
-              to="/preview/manila"
-              className={({ isActive }) =>
-                `nav-link ps-4 ${isActive ? "active" : ""}`
-              }
-            >
-              <i className="bi bi-geo-alt me-2"></i>
-              Manila
-            </NavLink>
-
-            <NavLink
-              to="/preview/cebu"
-              className={({ isActive }) =>
-                `nav-link ps-4 ${isActive ? "active" : ""}`
-              }
-            >
-              <i className="bi bi-geo-alt me-2"></i>
-              Cebu
-            </NavLink>
-
-            <NavLink
-              to="/preview/davao"
-              className={({ isActive }) =>
-                `nav-link ps-4 ${isActive ? "active" : ""}`
-              }
-            >
-              <i className="bi bi-geo-alt me-2"></i>
-              Davao
-            </NavLink>
-          </div>
-        </li>
-        <li>
           <NavLink
-            to="/registration"
+            to="/leads"
             className={({ isActive }) =>
-              `nav-link ${isActive ? "active" : "link-dark"}`
+              `nav-link ps-4 ${isActive ? "active" : "link-dark"}`
             }
           >
-            <i className="bi bi-clipboard-check me-2"></i>
-            Registration
+            <i className="bi bi-telephone me-2"></i>
+            Interested Leads
           </NavLink>
         </li>
+
+        <li>
+          <div className="nav-link text-uppercase small text-muted fw-bold mt-3">
+            Preview
+          </div>
+
+          <div className="nav-link ps-4 small text-muted fw-semibold">
+            Philippines
+          </div>
+
+          <NavLink
+            to="/preview/philippines/manila"
+            className={({ isActive }) =>
+              `nav-link ps-5 ${isActive ? "active" : "link-dark"}`
+            }
+          >
+            <i className="bi bi-geo-alt me-2"></i>
+            Manila
+          </NavLink>
+
+          <NavLink
+            to="/preview/philippines/cebu"
+            className={({ isActive }) =>
+              `nav-link ps-5 ${isActive ? "active" : "link-dark"}`
+            }
+          >
+            <i className="bi bi-geo-alt me-2"></i>
+            Cebu
+          </NavLink>
+
+          <NavLink
+            to="/preview/philippines/davao"
+            className={({ isActive }) =>
+              `nav-link ps-5 ${isActive ? "active" : "link-dark"}`
+            }
+          >
+            <i className="bi bi-geo-alt me-2"></i>
+            Davao
+          </NavLink>
+
+          <NavLink
+            to="/preview/indo"
+            className={({ isActive }) =>
+              `nav-link ps-4 ${isActive ? "active" : "link-dark"}`
+            }
+          >
+            <i className="bi bi-globe-asia-australia me-2"></i>
+            Indo
+          </NavLink>
+
+          <NavLink
+            to="/preview/singapore"
+            className={({ isActive }) =>
+              `nav-link ps-4 ${isActive ? "active" : "link-dark"}`
+            }
+          >
+            <i className="bi bi-globe me-2"></i>
+            Singapore
+          </NavLink>
+        </li>
+
+        <li>
+          <div className="nav-link text-uppercase small text-muted fw-bold mt-3">
+            Sign Ups
+          </div>
+
+          <NavLink
+            to="/sign-ups"
+            className={({ isActive }) =>
+              `nav-link ps-4 ${isActive ? "active" : "link-dark"}`
+            }
+          >
+            <i className="bi bi-pencil-square me-2"></i>
+            Sign Ups
+          </NavLink>
+        </li>
+
+        <li>
+          <div className="nav-link text-uppercase small text-muted fw-bold mt-3">
+            Participants
+          </div>
+
+          <NavLink
+            to="/participants/camp/may"
+            className={({ isActive }) =>
+              `nav-link ps-4 ${isActive ? "active" : "link-dark"}`
+            }
+          >
+            <i className="bi bi-calendar-event me-2"></i>
+            May Camp
+          </NavLink>
+
+          <NavLink
+            to="/participants/camp/october"
+            className={({ isActive }) =>
+              `nav-link ps-4 ${isActive ? "active" : "link-dark"}`
+            }
+          >
+            <i className="bi bi-calendar-event me-2"></i>
+            October Camp
+          </NavLink>
+        </li>
+
         <li>
           <NavLink
             to="/payments"
@@ -114,6 +158,7 @@ const Sidebar: React.FC = () => {
             Payments
           </NavLink>
         </li>
+
         <li>
           <NavLink
             to="/reports"

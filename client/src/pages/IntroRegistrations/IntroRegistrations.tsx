@@ -59,10 +59,17 @@ const defaultFormData: IntroFormData = {
 
 const IntroRegistrations = () => {
   const navigate = useNavigate();
-  const { city } = useParams();
-
-  const activePreviewCity =
-    city === "cebu" ? "Cebu" : city === "davao" ? "Davao" : "Manila";
+  const { country, city } = useParams();
+  const activePreviewLocation =
+    country === "indo"
+      ? "Indo"
+      : country === "singapore"
+        ? "Singapore"
+        : city === "cebu"
+          ? "Cebu"
+          : city === "davao"
+            ? "Davao"
+            : "Manila";
 
   const [introRegistrations, setIntroRegistrations] = useState<
     IntroRegistration[]
@@ -88,8 +95,7 @@ const IntroRegistrations = () => {
     return introRegistrations.filter((record) => {
       const searchValue = searchTerm.toLowerCase();
 
-      const matchesPreviewCity = record.cityOfPreview === activePreviewCity;
-
+      const matchesPreviewCity = record.cityOfPreview === activePreviewLocation;
       const matchesSearch =
         record.name.toLowerCase().includes(searchValue) ||
         record.email.toLowerCase().includes(searchValue) ||
@@ -120,7 +126,7 @@ const IntroRegistrations = () => {
     reminderFilter,
     attendanceFilter,
     signUpFilter,
-    activePreviewCity,
+    activePreviewLocation,
   ]);
 
   const refreshIntroRegistrations = () => {
@@ -133,9 +139,11 @@ const IntroRegistrations = () => {
     setError("");
     setShowForm(false);
   };
-
   const handleAddClick = () => {
-    setFormData(defaultFormData);
+    setFormData({
+      ...defaultFormData,
+      cityOfPreview: activePreviewLocation,
+    });
     setEditingRecord(null);
     setError("");
     setShowForm(true);
@@ -263,7 +271,7 @@ const IntroRegistrations = () => {
     <div className="container-fluid">
       <div className="d-flex justify-content-between align-items-start mb-4">
         <div>
-          <h1 className="fw-bold mb-1">Preview - {activePreviewCity}</h1>{" "}
+          <h1 className="fw-bold mb-1">Preview - {activePreviewLocation}</h1>{" "}
           <p className="text-muted mb-0">
             Manage parent leads, intro session attendance, and camp sign-up
             interest.

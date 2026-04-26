@@ -16,6 +16,8 @@ import Payments from "./pages/Payments/Payments";
 import Reports from "./pages/Reports/Reports";
 import Settings from "./pages/Settings/Settings";
 import IntroRegistrations from "./pages/IntroRegistrations/IntroRegistrations";
+import Leads from "./pages/Leads/Leads";
+import SignUps from "./pages/SignUps/SignUps";
 import "./App.css";
 
 function App() {
@@ -24,11 +26,17 @@ function App() {
       <Routes>
         <Route path="/" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
+          <Route path="leads" element={<Leads />} />
+          <Route path="sign-ups" element={<SignUps />} />
           <Route
             path="preview"
-            element={<Navigate to="/preview/manila" replace />}
+            element={<Navigate to="/preview/philippines/manila" replace />}
           />
-          <Route path="preview/:city" element={<IntroRegistrations />} />
+          <Route
+            path="preview/:country/:city"
+            element={<IntroRegistrations />}
+          />
+          <Route path="preview/:country" element={<IntroRegistrations />} />
           <Route
             path="participants"
             element={<Navigate to="/participants/camp/may" replace />}

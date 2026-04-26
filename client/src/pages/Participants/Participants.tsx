@@ -20,7 +20,6 @@ const Participants = () => {
 
   const activeCamp = campSeason === "october" ? "October Camp" : "May Camp";
 
-  const activeCampMonth = campSeason === "october" ? "October" : "May";
   const [allParticipants, setAllParticipants] = useState<Participant[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [programFilter, setProgramFilter] = useState("All");
