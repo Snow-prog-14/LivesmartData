@@ -1,4 +1,10 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+
 import DashboardLayout from "./layouts/DashboardLayout";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Participants from "./pages/Participants/Participants";
@@ -18,14 +24,23 @@ function App() {
       <Routes>
         <Route path="/" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
+
+          <Route
+            path="preview"
+            element={<Navigate to="/preview/manila" replace />}
+          />
+          <Route path="preview/:city" element={<IntroRegistrations />} />
+
           <Route path="participants" element={<Participants />} />
           <Route path="participants/new" element={<AddParticipant />} />
           <Route path="participants/edit/:id" element={<EditParticipant />} />
           <Route path="participants/:id" element={<ParticipantDetails />} />
+
           <Route path="registration" element={<Registration />} />
           <Route path="payments" element={<Payments />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
+
           <Route
             path="*"
             element={
@@ -36,7 +51,6 @@ function App() {
               </div>
             }
           />
-          <Route path="/intro-registrations" element={<IntroRegistrations />} />
         </Route>
       </Routes>
     </Router>

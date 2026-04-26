@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   addIntroRegistration,
   deleteIntroRegistration,
@@ -59,6 +59,10 @@ const defaultFormData: IntroFormData = {
 
 const IntroRegistrations = () => {
   const navigate = useNavigate();
+  const { city } = useParams();
+
+  const activePreviewCity =
+    city === "cebu" ? "Cebu" : city === "davao" ? "Davao" : "Manila";
 
   const [introRegistrations, setIntroRegistrations] = useState<
     IntroRegistration[]
@@ -84,6 +88,8 @@ const IntroRegistrations = () => {
     return introRegistrations.filter((record) => {
       const searchValue = searchTerm.toLowerCase();
 
+      const matchesPreviewCity = record.cityOfPreview === activePreviewCity;
+
       const matchesSearch =
         record.name.toLowerCase().includes(searchValue) ||
         record.email.toLowerCase().includes(searchValue) ||
@@ -101,7 +107,11 @@ const IntroRegistrations = () => {
         signUpFilter === "All" || record.signUp === signUpFilter;
 
       return (
-        matchesSearch && matchesReminder && matchesAttendance && matchesSignUp
+        matchesPreviewCity &&
+        matchesSearch &&
+        matchesReminder &&
+        matchesAttendance &&
+        matchesSignUp
       );
     });
   }, [
@@ -110,6 +120,7 @@ const IntroRegistrations = () => {
     reminderFilter,
     attendanceFilter,
     signUpFilter,
+    activePreviewCity,
   ]);
 
   const refreshIntroRegistrations = () => {
@@ -252,7 +263,7 @@ const IntroRegistrations = () => {
     <div className="container-fluid">
       <div className="d-flex justify-content-between align-items-start mb-4">
         <div>
-          <h1 className="fw-bold mb-1">Introductory Registrations</h1>
+          <h1 className="fw-bold mb-1">Preview - {activePreviewCity}</h1>{" "}
           <p className="text-muted mb-0">
             Manage parent leads, intro session attendance, and camp sign-up
             interest.
@@ -261,7 +272,7 @@ const IntroRegistrations = () => {
 
         <button className="btn btn-primary" onClick={handleAddClick}>
           <i className="bi bi-plus-lg me-2"></i>
-          Add Intro Registration
+          Add Preview Registration{" "}
         </button>
       </div>
 

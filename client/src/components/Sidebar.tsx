@@ -40,13 +40,41 @@ const Sidebar: React.FC = () => {
           </NavLink>
         </li>
         <li>
-          <NavLink
-            to="/intro-registrations"
-            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
-          >
-            <i className="bi bi-person-lines-fill me-2"></i>
-            Intro Registrations
-          </NavLink>
+          <div className="nav-item">
+            <div className="nav-link text-uppercase small text-muted fw-bold mt-3">
+              Preview
+            </div>
+
+            <NavLink
+              to="/preview/manila"
+              className={({ isActive }) =>
+                `nav-link ps-4 ${isActive ? "active" : ""}`
+              }
+            >
+              <i className="bi bi-geo-alt me-2"></i>
+              Manila
+            </NavLink>
+
+            <NavLink
+              to="/preview/cebu"
+              className={({ isActive }) =>
+                `nav-link ps-4 ${isActive ? "active" : ""}`
+              }
+            >
+              <i className="bi bi-geo-alt me-2"></i>
+              Cebu
+            </NavLink>
+
+            <NavLink
+              to="/preview/davao"
+              className={({ isActive }) =>
+                `nav-link ps-4 ${isActive ? "active" : ""}`
+              }
+            >
+              <i className="bi bi-geo-alt me-2"></i>
+              Davao
+            </NavLink>
+          </div>
         </li>
         <li>
           <NavLink
