@@ -1,15 +1,17 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
-import Topbar from '../components/Topbar';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import Sidebar from "../components/Sidebar";
+import Topbar from "../components/Topbar";
 
 const DashboardLayout: React.FC = () => {
   return (
-    <div className="d-flex">
+    <div className="ls-app-shell">
       <Sidebar />
-      <div className="flex-grow-1 d-flex flex-column" style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
+
+      <div className="ls-main-shell">
         <Topbar />
-        <main className="p-4 overflow-auto">
+
+        <main className="ls-main-content">
           <Outlet />
         </main>
       </div>

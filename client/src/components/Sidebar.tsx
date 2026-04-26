@@ -1,189 +1,117 @@
 import React from "react";
 import { NavLink, Link } from "react-router-dom";
 
+const getNavClass = ({ isActive }: { isActive: boolean }) =>
+  `ls-sidebar-link ${isActive ? "active" : ""}`;
+
+const getSubNavClass = ({ isActive }: { isActive: boolean }) =>
+  `ls-sidebar-link ls-sidebar-sub-link ${isActive ? "active" : ""}`;
+
+const getDeepSubNavClass = ({ isActive }: { isActive: boolean }) =>
+  `ls-sidebar-link ls-sidebar-deep-link ${isActive ? "active" : ""}`;
+
 const Sidebar: React.FC = () => {
   return (
-    <div
-      className="d-flex flex-column flex-shrink-0 p-3 bg-light border-end"
-      style={{ width: "280px", height: "100vh" }}
-    >
-      <Link
-        to="/"
-        className="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none"
-      >
-        <i className="bi bi-smartwatch me-2" style={{ fontSize: "1.5rem" }}></i>
-        <span className="fs-4">LivesmartData</span>
+    <aside className="ls-sidebar">
+      <Link to="/" className="ls-brand">
+        <div className="ls-brand-icon">
+          <i className="bi bi-stars"></i>
+        </div>
+
+        <div>
+          <div className="ls-brand-title">Livesmart</div>
+          <div className="ls-brand-subtitle">Registration System</div>
+        </div>
       </Link>
-      <hr />
-      <ul className="nav nav-pills flex-column mb-auto">
-        <li className="nav-item">
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              `nav-link ${isActive ? "active" : "link-dark"}`
-            }
-            end
-          >
-            <i className="bi bi-speedometer2 me-2"></i>
-            Dashboard
-          </NavLink>
-        </li>
 
-        <li>
-          <div className="nav-link text-uppercase small text-muted fw-bold mt-3">
-            Leads
-          </div>
+      <div className="ls-sidebar-divider" />
 
-          <NavLink
-            to="/leads"
-            className={({ isActive }) =>
-              `nav-link ps-4 ${isActive ? "active" : "link-dark"}`
-            }
-          >
-            <i className="bi bi-telephone me-2"></i>
-            Interested Leads
-          </NavLink>
-        </li>
+      <nav className="ls-sidebar-nav">
+        <NavLink to="/" className={getNavClass} end>
+          <i className="bi bi-speedometer2"></i>
+          <span>Dashboard</span>
+        </NavLink>
 
-        <li>
-          <div className="nav-link text-uppercase small text-muted fw-bold mt-3">
-            Preview
-          </div>
+        <div className="ls-sidebar-section">Leads</div>
 
-          <div className="nav-link ps-4 small text-muted fw-semibold">
-            Philippines
-          </div>
+        <NavLink to="/leads" className={getSubNavClass}>
+          <i className="bi bi-telephone"></i>
+          <span>Interested Leads</span>
+        </NavLink>
 
-          <NavLink
-            to="/preview/philippines/manila"
-            className={({ isActive }) =>
-              `nav-link ps-5 ${isActive ? "active" : "link-dark"}`
-            }
-          >
-            <i className="bi bi-geo-alt me-2"></i>
-            Manila
-          </NavLink>
+        <div className="ls-sidebar-section">Preview</div>
 
-          <NavLink
-            to="/preview/philippines/cebu"
-            className={({ isActive }) =>
-              `nav-link ps-5 ${isActive ? "active" : "link-dark"}`
-            }
-          >
-            <i className="bi bi-geo-alt me-2"></i>
-            Cebu
-          </NavLink>
-
-          <NavLink
-            to="/preview/philippines/davao"
-            className={({ isActive }) =>
-              `nav-link ps-5 ${isActive ? "active" : "link-dark"}`
-            }
-          >
-            <i className="bi bi-geo-alt me-2"></i>
-            Davao
-          </NavLink>
-
-          <NavLink
-            to="/preview/indo"
-            className={({ isActive }) =>
-              `nav-link ps-4 ${isActive ? "active" : "link-dark"}`
-            }
-          >
-            <i className="bi bi-globe-asia-australia me-2"></i>
-            Indo
-          </NavLink>
-
-          <NavLink
-            to="/preview/singapore"
-            className={({ isActive }) =>
-              `nav-link ps-4 ${isActive ? "active" : "link-dark"}`
-            }
-          >
-            <i className="bi bi-globe me-2"></i>
-            Singapore
-          </NavLink>
-        </li>
-
-        <li>
-          <div className="nav-link text-uppercase small text-muted fw-bold mt-3">
-            Sign Ups
-          </div>
-
-          <NavLink
-            to="/sign-ups"
-            className={({ isActive }) =>
-              `nav-link ps-4 ${isActive ? "active" : "link-dark"}`
-            }
-          >
-            <i className="bi bi-pencil-square me-2"></i>
-            Sign Ups
-          </NavLink>
-        </li>
-
-        <li>
-          <div className="nav-link text-uppercase small text-muted fw-bold mt-3">
-            Participants
-          </div>
-
-          <NavLink
-            to="/participants/camp/may"
-            className={({ isActive }) =>
-              `nav-link ps-4 ${isActive ? "active" : "link-dark"}`
-            }
-          >
-            <i className="bi bi-calendar-event me-2"></i>
-            May Camp
-          </NavLink>
-
-          <NavLink
-            to="/participants/camp/october"
-            className={({ isActive }) =>
-              `nav-link ps-4 ${isActive ? "active" : "link-dark"}`
-            }
-          >
-            <i className="bi bi-calendar-event me-2"></i>
-            October Camp
-          </NavLink>
-        </li>
-
-        <li>
-          <NavLink
-            to="/payments"
-            className={({ isActive }) =>
-              `nav-link ${isActive ? "active" : "link-dark"}`
-            }
-          >
-            <i className="bi bi-credit-card me-2"></i>
-            Payments
-          </NavLink>
-        </li>
-
-        <li>
-          <NavLink
-            to="/reports"
-            className={({ isActive }) =>
-              `nav-link ${isActive ? "active" : "link-dark"}`
-            }
-          >
-            <i className="bi bi-graph-up me-2"></i>
-            Reports
-          </NavLink>
-        </li>
-      </ul>
-      <hr />
-      <div className="dropdown">
+        <div className="ls-sidebar-country">
+          <i className="bi bi-globe-asia-australia"></i>
+          <span>Philippines</span>
+        </div>
         <NavLink
-          to="/settings"
-          className={({ isActive }) =>
-            `nav-link ${isActive ? "active" : "link-dark"}`
-          }
+          to="/preview/philippines/manila"
+          className={getDeepSubNavClass}
         >
-          <i className="bi bi-gear me-2"></i>
-          Settings
+          <i className="bi bi-geo-alt"></i>
+          <span>Manila</span>
+        </NavLink>
+
+        <NavLink to="/preview/philippines/cebu" className={getDeepSubNavClass}>
+          <i className="bi bi-geo-alt"></i>
+          <span>Cebu</span>
+        </NavLink>
+
+        <NavLink to="/preview/philippines/davao" className={getDeepSubNavClass}>
+          <i className="bi bi-geo-alt"></i>
+          <span>Davao</span>
+        </NavLink>
+
+        <NavLink to="/preview/indo" className={getSubNavClass}>
+          <i className="bi bi-globe-asia-australia"></i>
+          <span>Indo</span>
+        </NavLink>
+
+        <NavLink to="/preview/singapore" className={getSubNavClass}>
+          <i className="bi bi-globe"></i>
+          <span>Singapore</span>
+        </NavLink>
+
+        <div className="ls-sidebar-section">Sign Ups</div>
+
+        <NavLink to="/sign-ups" className={getSubNavClass}>
+          <i className="bi bi-pencil-square"></i>
+          <span>Sign Ups</span>
+        </NavLink>
+
+        <div className="ls-sidebar-section">Participants</div>
+
+        <NavLink to="/participants/camp/may" className={getSubNavClass}>
+          <i className="bi bi-calendar-event"></i>
+          <span>May Camp</span>
+        </NavLink>
+
+        <NavLink to="/participants/camp/october" className={getSubNavClass}>
+          <i className="bi bi-calendar-event"></i>
+          <span>October Camp</span>
+        </NavLink>
+
+        <div className="ls-sidebar-section">Management</div>
+
+        <NavLink to="/payments" className={getSubNavClass}>
+          <i className="bi bi-credit-card"></i>
+          <span>Payments</span>
+        </NavLink>
+
+        <NavLink to="/reports" className={getSubNavClass}>
+          <i className="bi bi-graph-up"></i>
+          <span>Reports</span>
+        </NavLink>
+      </nav>
+
+      <div className="ls-sidebar-footer">
+        <NavLink to="/settings" className={getNavClass}>
+          <i className="bi bi-gear"></i>
+          <span>Settings</span>
         </NavLink>
       </div>
-    </div>
+    </aside>
   );
 };
 

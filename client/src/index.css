@@ -1,5 +1,9 @@
 :root {
-  --bs-body-bg: #f8f9fa;
+  --bs-body-bg: #eaf7ff;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
@@ -7,8 +11,10 @@ body {
   display: block;
   min-width: 320px;
   min-height: 100vh;
+  background: #eaf7ff;
 }
 
 #root {
   width: 100%;
+  min-height: 100vh;
 }
